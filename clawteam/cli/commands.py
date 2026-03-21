@@ -2643,6 +2643,7 @@ def spawn_agent(
     _team = team or "default"
     _name = agent_name or f"agent-{uuid.uuid4().hex[:6]}"
     _id = uuid.uuid4().hex[:12]
+    user_name = os.environ.get("CLAWTEAM_USER", "")
 
     # Resolve skip_permissions from config
     if skip_permissions is None:
@@ -2697,13 +2698,38 @@ def spawn_agent(
     elif not command:
         command = ["claude"]
 
+    # Auto-register agent as team member
+    from clawteam.team.manager import TeamManager
+    team_created = False
+    member_added = False
+    if TeamManager.get_team(_team) is None and agent_type in {"leader", "orchestrator"}:
+        TeamManager.create_team(
+            name=_team,
+            leader_name=_name,
+            leader_id=_id,
+            description="Auto-created by clawteam spawn",
+            user=user_name,
+            leader_agent_type=agent_type,
+        )
+        team_created = True
+        member_added = True
+    try:
+        if not team_created:
+            TeamManager.add_member(
+                team_name=_team,
+                member_name=_name,
+                agent_id=_id,
+                agent_type=agent_type,
+                user=user_name,
+            )
+            member_added = True
+    except ValueError:
+        pass  # already a member, ignore
+
     # Build prompt: identity + task + clawteam coordination guide
     prompt = None
     if task:
-        import os as _os
-
         from clawteam.spawn.prompt import build_agent_prompt
-        from clawteam.team.manager import TeamManager
 
         leader_name = TeamManager.get_leader_name(_team) or "leader"
         prompt = build_agent_prompt(
@@ -2713,7 +2739,7 @@ def spawn_agent(
             team_name=_team,
             leader_name=leader_name,
             task=task,
-            user=_os.environ.get("CLAWTEAM_USER", ""),
+            user=user_name,
             workspace_dir=cwd or "",
             workspace_branch=ws_branch,
             repo_path=repo,
@@ -2732,23 +2758,6 @@ def spawn_agent(
             if prompt:
                 prompt += "\nYou are resuming a previous session."
 
-    # Auto-register agent as team member
-    import os as _os2
-
-    from clawteam.team.manager import TeamManager
-    member_added = False
-    try:
-        TeamManager.add_member(
-            team_name=_team,
-            member_name=_name,
-            agent_id=_id,
-            agent_type=agent_type,
-            user=_os2.environ.get("CLAWTEAM_USER", ""),
-        )
-        member_added = True
-    except ValueError:
-        pass  # already a member, ignore
-
     result = be.spawn(
         command=command,
         agent_name=_name,
@@ -2763,7 +2772,10 @@ def spawn_agent(
 
     if result.startswith("Error"):
         if member_added:
-            TeamManager.remove_member(_team, _name)
+            if team_created:
+                TeamManager.cleanup(_team)
+            else:
+                TeamManager.remove_member(_team, _name)
         if ws_mgr is not None and cwd:
             try:
                 ws_mgr.cleanup_workspace(_team, _name, auto_checkpoint=False)

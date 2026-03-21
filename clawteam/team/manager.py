@@ -74,6 +74,7 @@ class TeamManager:
         leader_id: str,
         description: str = "",
         user: str = "",
+        leader_agent_type: str = "leader",
     ) -> TeamConfig:
         if _config_path(name).exists():
             raise ValueError(f"Team '{name}' already exists")
@@ -82,7 +83,7 @@ class TeamManager:
             name=leader_name,
             user=user,
             agent_id=leader_id,
-            agent_type="leader",
+            agent_type=leader_agent_type,
         )
         config = TeamConfig(
             name=name,
