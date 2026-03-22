@@ -22,7 +22,7 @@ def detect_overlaps(team_name: str, repo: str | None = None) -> list[dict]:
       - low: agents changed files in the same directory
     """
     owners = file_owners(team_name, repo)
-    mgr = _ws_manager(repo)
+    mgr = _ws_manager(team_name, repo)
 
     overlaps: list[dict] = []
     for fname, agents in owners.items():
@@ -129,7 +129,7 @@ def check_conflicts(
 
     Returns list of dicts with: file, conflict_markers (bool), details.
     """
-    mgr = _ws_manager(repo)
+    mgr = _ws_manager(team_name, repo)
     branch_a = _agent_branch(team_name, agent_a)
     branch_b = _agent_branch(team_name, agent_b)
     base_a = _base_branch(team_name, agent_a, mgr)
@@ -235,7 +235,7 @@ def suggest_rebase(
 
     Returns a suggestion string, or None if no rebase is needed.
     """
-    mgr = _ws_manager(repo)
+    mgr = _ws_manager(team_name, repo)
     branch = _agent_branch(team_name, agent_name)
     base = _base_branch(team_name, agent_name, mgr)
 
