@@ -285,6 +285,11 @@ img {
   z-index: 3;
 }
 
+.orbit-label svg {
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
 .orbit-label::before {
   content: "";
   width: 24px;
@@ -460,6 +465,9 @@ img {
 }
 
 .clients-list span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   padding: 6px 16px;
   border-radius: 999px;
   border: 1px solid var(--border-strong);
@@ -467,6 +475,11 @@ img {
   font-size: 0.82rem;
   font-family: var(--mono);
   transition: border-color 0.15s;
+}
+
+.clients-list svg {
+  flex-shrink: 0;
+  opacity: 0.7;
 }
 
 .clients-list span:hover {
