@@ -6,6 +6,19 @@ by the ClawTeam Skill, not duplicated here.
 
 from __future__ import annotations
 
+# ---------------------------------------------------------------------------
+# Metacognitive self-evaluation block
+# Injected into agent prompts so agents report confidence and escalate
+# when uncertain. Based on cognitive architecture research (metacognition).
+# ---------------------------------------------------------------------------
+
+METACOGNITION_BLOCK = """## Self-Evaluation
+
+After completing each task, include a confidence assessment:
+- Tag your output with `[confidence: 0.X]` where X is 0-10 (e.g., `[confidence: 0.8]`).
+- If confidence < 0.6, explain what you are uncertain about and recommend human review.
+- If you encounter something outside your expertise, say so and suggest escalation rather than guessing."""
+
 
 def build_agent_prompt(
     agent_name: str,
@@ -65,6 +78,8 @@ def build_agent_prompt(
         f"- After finishing work, report your costs: `clawteam cost report {team_name} --input-tokens <N> --output-tokens <N> --cost-cents <N>`",
         f"- Before finishing, save your session: `clawteam session save {team_name} --session-id <id>`",
         "- When you finish all tasks, type `exit` to terminate this session.",
+        "",
+        METACOGNITION_BLOCK,
         "",
     ])
     return "\n".join(lines)

@@ -74,3 +74,22 @@ class TestBuildAgentPrompt:
         assert "clawteam task list my-team --owner dev" in prompt
         assert "clawteam inbox send my-team boss" in prompt
         assert "clawteam cost report my-team" in prompt
+
+    def test_prompt_contains_metacognition_block(self):
+        prompt = build_agent_prompt(
+            agent_name="w", agent_id="id", agent_type="t",
+            team_name="team", leader_name="lead", task="task",
+        )
+        assert "## Self-Evaluation" in prompt
+        assert "[confidence: 0.X]" in prompt
+        assert "confidence < 0.6" in prompt
+        assert "escalation" in prompt
+
+    def test_metacognition_after_coordination(self):
+        prompt = build_agent_prompt(
+            agent_name="w", agent_id="id", agent_type="t",
+            team_name="team", leader_name="lead", task="task",
+        )
+        coord_pos = prompt.index("## Coordination Protocol")
+        meta_pos = prompt.index("## Self-Evaluation")
+        assert coord_pos < meta_pos
