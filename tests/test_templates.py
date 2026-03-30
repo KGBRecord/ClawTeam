@@ -49,6 +49,20 @@ class TestModels:
         assert a.type == "general-purpose"
         assert a.task == ""
         assert a.command is None
+        assert a.intent is None
+        assert a.end_state is None
+        assert a.constraints is None
+
+    def test_agent_def_intent_fields(self):
+        a = AgentDef(
+            name="analyst",
+            intent="Analyze stock fundamentals",
+            end_state="Buy/sell/hold recommendation",
+            constraints=["No leverage", "Max 10% position"],
+        )
+        assert a.intent == "Analyze stock fundamentals"
+        assert a.end_state == "Buy/sell/hold recommendation"
+        assert len(a.constraints) == 2
 
     def test_task_def(self):
         t = TaskDef(subject="Build feature", description="details", owner="alice")

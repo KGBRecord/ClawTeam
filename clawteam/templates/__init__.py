@@ -26,6 +26,9 @@ class AgentDef(BaseModel):
     type: str = "general-purpose"
     task: str = ""
     command: list[str] | None = None
+    intent: str | None = None  # Auftragstaktik: what is the mission's purpose?
+    end_state: str | None = None  # What does success look like?
+    constraints: list[str] | None = None  # Boundaries the agent must respect
 
 
 class TaskDef(BaseModel):

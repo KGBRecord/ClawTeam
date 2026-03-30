@@ -74,3 +74,48 @@ class TestBuildAgentPrompt:
         assert "clawteam task list my-team --owner dev" in prompt
         assert "clawteam inbox send my-team boss" in prompt
         assert "clawteam cost report my-team" in prompt
+
+    def test_prompt_includes_mission_when_intent_provided(self):
+        prompt = build_agent_prompt(
+            agent_name="w", agent_id="id", agent_type="t",
+            team_name="team", leader_name="lead", task="task",
+            intent="Analyze AAPL for value investing opportunities",
+        )
+        assert "## Mission" in prompt
+        assert "**Intent:** Analyze AAPL" in prompt
+
+    def test_prompt_includes_end_state(self):
+        prompt = build_agent_prompt(
+            agent_name="w", agent_id="id", agent_type="t",
+            team_name="team", leader_name="lead", task="task",
+            end_state="A buy/sell/hold recommendation with confidence score",
+        )
+        assert "**End State:**" in prompt
+        assert "buy/sell/hold" in prompt
+
+    def test_prompt_includes_constraints(self):
+        prompt = build_agent_prompt(
+            agent_name="w", agent_id="id", agent_type="t",
+            team_name="team", leader_name="lead", task="task",
+            constraints=["Do not use leverage", "Max position size 10%"],
+        )
+        assert "**Constraints:**" in prompt
+        assert "- Do not use leverage" in prompt
+        assert "- Max position size 10%" in prompt
+
+    def test_prompt_no_mission_when_no_intent_fields(self):
+        prompt = build_agent_prompt(
+            agent_name="w", agent_id="id", agent_type="t",
+            team_name="team", leader_name="lead", task="task",
+        )
+        assert "## Mission" not in prompt
+
+    def test_prompt_mission_before_task(self):
+        prompt = build_agent_prompt(
+            agent_name="w", agent_id="id", agent_type="t",
+            team_name="team", leader_name="lead", task="do the thing",
+            intent="Test ordering",
+        )
+        mission_pos = prompt.index("## Mission")
+        task_pos = prompt.index("## Task")
+        assert mission_pos < task_pos

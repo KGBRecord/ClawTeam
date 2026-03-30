@@ -2387,6 +2387,9 @@ def launch_team(
             workspace_dir=cwd or "",
             workspace_branch=ws_branch,
             memory_scope=f"custom:team-{t_name}",
+            intent=agent.intent or "",
+            end_state=agent.end_state or "",
+            constraints=agent.constraints,
         )
 
         # Resolve skip_permissions from config

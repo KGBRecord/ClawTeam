@@ -18,8 +18,11 @@ def build_agent_prompt(
     workspace_dir: str = "",
     workspace_branch: str = "",
     memory_scope: str = "",
+    intent: str = "",
+    end_state: str = "",
+    constraints: list[str] | None = None,
 ) -> str:
-    """Build agent prompt: identity + task + optional workspace info."""
+    """Build agent prompt: identity + mission + task + optional workspace info."""
     lines = [
         "## Identity\n",
         f"- Name: {agent_name}",
@@ -32,6 +35,17 @@ def build_agent_prompt(
         f"- Team: {team_name}",
         f"- Leader: {leader_name}",
     ])
+    # Mission section (Auftragstaktik: intent + end_state + constraints)
+    if intent or end_state or constraints:
+        lines.extend(["", "## Mission\n"])
+        if intent:
+            lines.append(f"**Intent:** {intent}")
+        if end_state:
+            lines.append(f"**End State:** {end_state}")
+        if constraints:
+            lines.append("**Constraints:**")
+            for c in constraints:
+                lines.append(f"- {c}")
     if workspace_dir:
         lines.extend([
             "",
