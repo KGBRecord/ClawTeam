@@ -68,6 +68,35 @@ def delete_branch(repo: Path, branch: str) -> None:
     _run(["branch", "-D", branch], cwd=repo)
 
 
+def _staged_summary(worktree_path: Path) -> str:
+    """Build a short summary of staged changes for the commit message body."""
+    try:
+        raw = _run(["diff", "--cached", "--name-only"], cwd=worktree_path, check=False)
+        if not raw:
+            return ""
+        files = [f.strip() for f in raw.splitlines() if f.strip()]
+        if not files:
+            return ""
+
+        # Get insertions/deletions
+        stat = _run(["diff", "--cached", "--shortstat"], cwd=worktree_path, check=False).strip()
+
+        # Build summary: show up to 8 file basenames, then "..."
+        from pathlib import PurePosixPath
+        names = [PurePosixPath(f).name for f in files]
+        if len(names) > 8:
+            shown = ", ".join(names[:8]) + f", ... (+{len(names) - 8} more)"
+        else:
+            shown = ", ".join(names)
+
+        parts = [f"Files ({len(files)}): {shown}"]
+        if stat:
+            parts.append(stat)
+        return "\n".join(parts)
+    except Exception:
+        return ""
+
+
 def commit_all(worktree_path: Path, message: str) -> bool:
     """Stage everything and commit. Returns True if a commit was created."""
     _run(["add", "-A"], cwd=worktree_path)
@@ -79,6 +108,12 @@ def commit_all(worktree_path: Path, message: str) -> bool:
     )
     if result.returncode == 0:
         return False  # nothing staged
+
+    # Enrich commit message with a summary of what changed
+    summary = _staged_summary(worktree_path)
+    if summary:
+        message = f"{message}\n\n{summary}"
+
     _run(["commit", "-m", message], cwd=worktree_path)
     return True
 

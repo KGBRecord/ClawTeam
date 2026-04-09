@@ -12,4 +12,7 @@ venv/
 uv.lock
 .claude/*.local.md
 
+apps/
 tmp/
+.DS_Store
+config.json

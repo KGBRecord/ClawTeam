@@ -1,0 +1,14 @@
+{
+  "data_dir": "",
+  "user": "hanhvs",
+  "default_team": "",
+  "transport": "file",
+  "task_store": "file",
+  "workspace": "auto",
+  "default_backend": "tmux",
+  "skip_permissions": true,
+  "spawn_prompt_delay": 2.0,
+  "spawn_ready_timeout": 30.0,
+  "default_model": "",
+  "model_tiers": {}
+}

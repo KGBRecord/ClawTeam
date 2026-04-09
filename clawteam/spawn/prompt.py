@@ -26,6 +26,36 @@ As a member of a multi-agent team, follow these four rules:
 # when uncertain. Based on cognitive architecture research (metacognition).
 # ---------------------------------------------------------------------------
 
+GIT_COMMIT_RULES_TEMPLATE = """## Git Commit Rules (CRITICAL)
+
+You MUST commit your work frequently using `git commit` with meaningful messages. Do NOT leave all changes uncommitted — ClawTeam's auto-checkpoint produces generic messages with no summary.
+
+**Commit after each logical unit of work:**
+- After scaffolding a new module → commit
+- After implementing a feature → commit
+- After fixing a bug → commit
+- After writing tests → commit
+
+**Commit message format:** `[clawteam] <type>: <concise summary of what you did and why>`
+- Types: `feat`, `fix`, `refactor`, `docs`, `test`, `chore`
+- The summary MUST describe the actual change in human-readable language
+- Examples:
+  - ✅ `[clawteam] feat: add JWT authentication middleware with refresh token support`
+  - ✅ `[clawteam] fix: resolve null pointer in quotation calculation when area is zero`
+  - ✅ `[clawteam] refactor: extract pricing logic into QuotationService`
+  - ❌ `update files` / `wip` / `changes` / `fix stuff` / `feat: something` (missing prefix)
+
+**How to commit:**
+To avoid multi-line string issues in bash, use multiple `-m` flags (git will assemble them into paragraphs). Use the third `-m` for the context footer.
+```bash
+git add -A
+git commit -m "[clawteam] feat: <your concise summary here>" \
+  -m "- <detail line 1>
+- <detail line 2>
+- <detail line 3>" \
+  -m "-- team: {team_name} | agent: {agent_name} | task: <your-task-id-or-MP>"
+```"""
+
 METACOGNITION_BLOCK = """## Self-Evaluation
 
 After completing each task, include a confidence assessment:
@@ -111,6 +141,8 @@ def build_agent_prompt(
         "- When you finish all tasks, type `exit` to terminate this session.",
         "",
         METACOGNITION_BLOCK,
+        "",
+        GIT_COMMIT_RULES_TEMPLATE.format(team_name=team_name, agent_name=agent_name),
         "",
     ])
     return "\n".join(lines)
