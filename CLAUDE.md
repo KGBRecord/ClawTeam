@@ -16,6 +16,29 @@ Before executing any plan, you **MUST** explicitly ask the user:
 - If BMAD is chosen: Do NOT spawn agents manually. Instead, use IDE tools to write specification files into the `.bmad/` directory (prd.md, solution.md), then trigger `clawteam bmad sync` and `clawteam bmad run`.
 - If traditional is chosen: Proceed with the standard `clawteam spawn` process manually.
 
+## Figma UI Workflow Protocol
+
+If your assigned task relates to building UI from a Figma design, ALWAYS check `apps/<current-project>/.clawteam/config.json` for the `Figma Personal Access Token` and `File ID`.
+
+- **If you are spawned as the `designer` agent:** 
+  1. Use `curl` to fetch the ENTIRE Figma JSON from `https://api.figma.com/v1/files/[File-ID]` using the credentials. Save it to a local temp file.
+  2. Write a Python script to search the massive JSON document recursively, looking for the specific `name` of the Screen/Component assigned to you.
+  3. Once you locate the node, precisely extract its physical properties:
+     - `absoluteBoundingBox` (width, height, x, y)
+     - `fills` (Exact Hex/RGBA colors)
+     - `characters` and `style` (fontFamily, fontWeight, fontSize, lineHeight, letterSpacing)
+     - `effects` (drop shadows, inner shadows)
+     - `layoutMode` (flex box direction)
+     - Spacing metrics: `itemSpacing`, `paddingLeft`, `paddingRight`, `paddingTop`, `paddingBottom`, `cornerRadius`
+  4. Format these metrics into a strict Markdown "Design Spec".
+  5. Send this exact Design Spec via `clawteam inbox send <team> frontend "Specs: ..."` to the frontend agent.
+
+- **If you are spawned as the `frontend` agent:** 
+  1. Loop `clawteam inbox receive <team>` to wait for the Design Specs from the designer agent.
+  2. Build the React/HTML UI strictly enforcing every single pixel, color hex, padding value, and font size specified in the Specs. Do NOT estimate or guess the styling; map exactly to the provided JSON metrics.
+
+- **SECURE CLEANUP:** Once the codebase is updated and complete, ensure that the Figma Token and File ID are deleted from `config.json`.
+
 ## Quick Reference
 
 ```bash
