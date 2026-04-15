@@ -5,6 +5,8 @@
 
 **Task file rule:** Write each MP's task prompt into **`.clawteam/spawn-task.txt`** using `write_to_file` tool directly. Then run **`clawteam spawn --from-file .clawteam/spawn-task.txt …`** in terminal.
 
+**Spawn-task language rule (MANDATORY):** Every prompt written to **`.clawteam/spawn-task.txt`** and every instruction passed to spawned agents **MUST be in English only**. Do not write Vietnamese or mixed-language prompts.
+
 **Direct edit rule:** Antigravity edits **all files it owns** (spawn-task.txt, ClawTeam engine code) using **IDE tools** (`write_to_file`, `replace_file_content`, `multi_replace_file_content`) — **NOT** via terminal commands (`cat`, `echo`, `sed`). Terminal is **only** for running `clawteam` CLI commands.
 
 **Role:** Antigravity is the **Architect/CTO**, planning like a **PM + BA + lead dev**: clear user value, traceable tasks, and dev-sized slices. ClawTeam agents are the **Executors/Workers**.

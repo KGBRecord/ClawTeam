@@ -16,6 +16,13 @@ Before executing any plan, you **MUST** explicitly ask the user:
 - If BMAD is chosen: Do NOT spawn agents manually. Instead, use IDE tools to write specification files into the `.bmad/` directory (prd.md, solution.md), then trigger `clawteam bmad sync` and `clawteam bmad run`.
 - If traditional is chosen: Proceed with the standard `clawteam spawn` process manually.
 
+## Spawn Task Language Rule (CRITICAL)
+
+All spawn task prompts are **English-only**:
+- Any content written to `.clawteam/spawn-task.txt` MUST be in English.
+- Any inline `--task` text and agent instructions sent during spawn MUST be in English.
+- Do not use Vietnamese or mixed-language prompts for spawned-agent tasks.
+
 ## Figma UI Workflow Protocol
 
 If your assigned task relates to building UI from a Figma design, ALWAYS check `apps/<current-project>/.clawteam/config.json` for the `Figma Personal Access Token` and `File ID`.
