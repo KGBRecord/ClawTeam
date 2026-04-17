@@ -157,6 +157,18 @@ Write the **IMPLEMENTATION PLAN** following the nested structure:
 - If BMAD is chosen -> You will author `.bmad/` specification files (`prd.md`, `solution.md`) via IDE tools and then trigger `clawteam bmad sync` / `clawteam bmad run`.
 - If standard is chosen -> Each **MP** maps to a single manual `clawteam spawn --from-file` cycle.
 
+### Step 2.2 — Plan Review Gate (MANDATORY)
+
+Before any `clawteam spawn` command, Antigravity **MUST** write the full plan to a temporary markdown file:
+
+`apps/{project-name}/.clawteam/plan-draft.md`
+
+Rules:
+1. Antigravity writes/updates `plan-draft.md` using IDE tools (not terminal text-edit commands).
+2. Antigravity stops and asks user to review/edit the plan file.
+3. Antigravity **MUST NOT** execute delegation until user explicitly approves the plan.
+4. After user approval and execution start, `plan-draft.md` may be kept for traceability or deleted if user requests temp cleanup.
+
 ### Step 2.5 — Figma UI Workflow (If doing Frontend work)
 
 **CRITICAL RULE FOR FE TASKS:** When the user asks you to build a Frontend/UI task, you **MUST ALWAYS** ask: *"Có thiết kế Figma nào cho phần này không?"* (Do you have a Figma design for this?)
